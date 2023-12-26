@@ -1,4 +1,30 @@
-- task: S3Upload@0
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: UseDotNet@2
   inputs:
-    BucketName: 'awsazuredemo123'
-    File: '$(Build.ArtifactStagingDirectory)/examplefile.txt'
+    packageType: 'sdk'
+    version: '3.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- script: |
+    # Install AWS CLI
+    Invoke-WebRequest -Uri https://awscli.amazonaws.com/AWSCLIV2.msi -OutFile $env:TEMP\AWSCLIV2.msi
+    Start-Process -Wait -FilePath msiexec.exe -ArgumentList /i,$env:TEMP\AWSCLIV2.msi /qn
+
+    # Configure AWS CLI with your AWS credentials
+    aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID)
+    aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY)
+    aws configure set default.region $(AWS_REGION)
+
+    # Create an S3 bucket
+    aws s3api create-bucket --bucket YOUR_BUCKET_NAME --region $(AWS_REGION)
+
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+    AWS_REGION: 'us-east-1'  # Replace with your desired AWS region
