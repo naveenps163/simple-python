@@ -1,0 +1,5 @@
+- task: S3Download@1
+  inputs:
+    regionName: 'ap-south-1'
+    bucketName: 'azureawsbucket123'
+    globExpressions: '**'
