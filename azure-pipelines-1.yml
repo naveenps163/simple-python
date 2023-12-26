@@ -1,5 +1,4 @@
-- task: S3Download@1
+- task: S3Upload@0
   inputs:
-    regionName: 'ap-south-1'
-    bucketName: 'azureawsbucket123'
-    globExpressions: '**'
+    BucketName: 'awsazuredemo123'
+    File: '$(Build.ArtifactStagingDirectory)/examplefile.txt'
